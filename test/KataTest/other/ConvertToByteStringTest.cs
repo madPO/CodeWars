@@ -2,6 +2,7 @@ namespace KataTest.other
 {
     using System;
     using System.Linq;
+    using System.Text;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Running;
     using Xunit;
@@ -24,6 +25,15 @@ namespace KataTest.other
         }
         
         [Fact]
+        [Benchmark]
+        public void StringBuilderTest()
+        {
+            var result = ToStringBuilderMethod(_byteArray);
+            
+            Assert.True(_expected.Equals(result, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        [Fact]
         public void Benchmark()
         {
             var summary = BenchmarkRunner.Run<ConvertToByteStringTest>();
@@ -32,6 +42,17 @@ namespace KataTest.other
         private string ToStringMethod(byte[] values)
         {
             return string.Join("", values.Select(x => x.ToString("x2")));
+        }
+        
+        private string ToStringBuilderMethod(byte[] values)
+        {
+            var builder = new StringBuilder(values.Length * 2);
+            foreach (var value in values)
+            {
+                builder.AppendFormat("{0:x2}", value);
+            }
+            
+            return builder.ToString();
         }
 
         [Fact]
